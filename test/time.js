@@ -13,6 +13,9 @@ exports.time = {
         console.log(_.Hours(1).concat(_.Hours(2)));
         console.log(_.Seconds(1).concat(_.Hours(2)));
         console.log(_.Hours(1).concat(_.Seconds(2)));
+        console.log(_.Milliseconds(1).concat(_.Milliseconds(2)));
+        console.log(_.Seconds(1).concat(_.Milliseconds(2)));
+        console.log(_.Milliseconds(1).concat(_.Seconds(2)));
 
         console.log(_.Seconds(1).chain(function(a) {
             return _.Minutes(1 + a);
