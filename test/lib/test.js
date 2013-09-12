@@ -1,4 +1,4 @@
-var _ = require('../../src/time');
+var _ = require('../../src/every');
 
 _ = _
     .property('check', _.curry(function(property, args, test) {

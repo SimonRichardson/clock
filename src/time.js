@@ -108,6 +108,29 @@ Time.prototype.map = function(f) {
     });
 };
 
+//
+//  ## increment
+//
+//  Increment the time by one unit
+//
+Time.prototype.increment = function(time) {
+    return this.concat(time);
+};
+
+//
+//  ## decrement
+//
+//  Decrement the time by one unit
+//
+Time.prototype.decrement = function() {
+    throw new Error('Implement');
+};
+
+//
+//  ## isTime(a)
+//
+//  Returns `true` if `a` is an instance of `Time`.
+//
 var isTime = _.isInstanceOf(Time);
 
 //

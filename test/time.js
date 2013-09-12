@@ -21,8 +21,23 @@ exports.time = {
         }));
 
         console.log(_.Seconds(2).map(_.decSecond));
+        console.log(_.Milliseconds(2).increment(_.Milliseconds(2)).increment(_.Milliseconds(3)));
 
-        test.ok(true);
-        test.done();
+        console.log('');
+
+        _.every(_.Milliseconds(100)).map(
+            function(s) {
+                return s.concat(_.Milliseconds(1));
+            }
+        ).fork(
+            function(x) {
+                console.log(x);
+            }
+        );
+
+        setTimeout(function() {
+            test.ok(true);
+            test.done();
+        }, 2000);
     }
 };
