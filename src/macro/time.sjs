@@ -1,5 +1,5 @@
 macro $time {
-    case {_ + $x:lit h $rest ... } => {
+    case {_ + $x h $rest ... } => {
         return #{
             .map(
                 function(x) {
@@ -9,7 +9,7 @@ macro $time {
             $time $rest ...
         }
     }
-   case {_ + $x:lit m $rest ... } => {
+   case {_ + $x m $rest ... } => {
         return #{ 
             .map(
                 function(x) {
@@ -19,7 +19,7 @@ macro $time {
             $time $rest ...
         }
     }
-    case {_ + $x:lit s $rest ... } => {
+    case {_ + $x s $rest ... } => {
         return #{ 
             .map(
                 function(x) {
@@ -29,7 +29,7 @@ macro $time {
             $time $rest ...
         }
     }
-    case {_ + $x:lit ms $rest ... } => {
+    case {_ + $x ms $rest ... } => {
         return #{ 
             .map(
                 function(x) {
@@ -39,16 +39,16 @@ macro $time {
             $time $rest ...  
         }
     }
-    case {_ $x:lit h $rest ... } => {
+    case {_ $x h $rest ... } => {
         return #{ _.Hours($x) $time $rest ... }
     }
-    case {_ $x:lit m $rest ... } => {
+    case {_ $x m $rest ... } => {
         return #{ _.Minutes($x) $time $rest ... }
     }
-    case {_ $x:lit s $rest ... } => {
+    case {_ $x s $rest ... } => {
         return #{ _.Seconds($x) $time $rest ... }
     }
-    case {_ $x:lit ms $rest ... } => {
+    case {_ $x ms $rest ... } => {
         return #{ _.Milliseconds($x) $time $rest ... }
     }
     case {_ } => {
