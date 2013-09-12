@@ -191,11 +191,11 @@ function millisecondsOf() {
 var isMillisecondsOf = _.isInstanceOf(millisecondsOf);
 
 var inc = _.curry(function(t, x, v) {
-    return x + (t * v);
+    return t + (x * v);
 });
 
 var dec = _.curry(function(t, x, v) {
-    return x - (t * v);
+    return t - (x * v);
 });
 
 //
@@ -255,6 +255,62 @@ var incMilliseconds = inc(1);
 var incMillisecond = incMilliseconds(1);
 
 //
+//  ## decHours(a, v)
+//
+//  Decrements the number by v
+//
+var decHours = dec(360000);
+
+//
+//  ## decHour(a)
+//
+//  Decrements the number by 1
+//
+var decHour = decHours(1);
+
+//
+//  ## decMinutes(a, v)
+//
+//  Decrements the number by v
+//
+var decMinutes = dec(60000);
+
+//
+//  ## decMinute(a)
+//
+//  Decrements the number by 1
+//
+var decMinute = decMinutes(1);
+
+//
+//  ## decSeconds(a, v)
+//
+//  Decrements the number by v
+//
+var decSeconds = dec(1000);
+
+//
+//  ## decSecond(a)
+//
+//  Decrements the number by 1
+//
+var decSecond = decSeconds(1);
+
+//
+//  ## decMilliseconds(a, v)
+//
+//  Decrements the number by v
+//
+var decMilliseconds = dec(1);
+
+//
+//  ## decMillisecond(a)
+//
+//  Decrements the number by 1
+//
+var decMillisecond = decMilliseconds(1);
+
+//
 //  ### Fantasy Overload
 //
 _.fo.unsafeSetValueOf(Time.prototype);
@@ -284,6 +340,14 @@ _ = _
   .property('incSecond', incSecond)
   .property('incMilliseconds', incMilliseconds)
   .property('incMillisecond', incMillisecond)
+  .property('decHours', decHours)
+  .property('decHour', decHour)
+  .property('decMinutes', decMinutes)
+  .property('decMinute', decMinute)
+  .property('decSeconds', decSeconds)
+  .property('decSecond', decSecond)
+  .property('decMilliseconds', decMilliseconds)
+  .property('decMillisecond', decMillisecond)
   .method('chain', isTime, function(a, b) {
       return a.chain(b);
   })

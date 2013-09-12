@@ -4,7 +4,7 @@ exports.time = {
     'do' : function(test) {
 
         console.log('');
-        /*
+
 
         console.log(_.Seconds(1).concat(_.Seconds(1)));
         console.log(_.Seconds(1).concat(_.Minutes(1)));
@@ -18,8 +18,8 @@ exports.time = {
             return _.Minutes(1 + a);
         }));
 
-        */
-        console.log(_.Seconds(1).map(_.incSecond));
+
+        console.log(_.Seconds(2).map(_.decSecond));
 
         test.ok(true);
         test.done();
