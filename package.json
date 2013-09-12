@@ -1,0 +1,25 @@
+{
+  "name": "clock",
+  "description": "Clock using squishy-pants",
+  "author": "Simon Richardson <stickupkid@gmail.com> (https://github.com/SimonRichardson)",
+  "homepage": "https://github.com/SimonRichardson/clock",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimonRichardson/clock.git"
+  },
+  "scripts": {
+    "test": "grunt default"
+  },
+  "dependencies": {
+    "squishy-pants": "0.0.4"
+  },
+  "devDependencies": {
+    "grunt-cli": "0.1.9",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.0"
+  },
+  "main": "clock.js",
+  "version": "0.0.1"
+}
