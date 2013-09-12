@@ -351,6 +351,9 @@ _ = _
   .method('chain', isTime, function(a, b) {
       return a.chain(b);
   })
+  .method('concat', isTime, function(a, b) {
+      return a.concat(b);
+  })
   .method('extract', isTime, function(a) {
       return a.extract();
   })
