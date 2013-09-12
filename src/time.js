@@ -190,11 +190,21 @@ function millisecondsOf() {
 //
 var isMillisecondsOf = _.isInstanceOf(millisecondsOf);
 
-var inc = _.curry(function(t, x, v) {
+//
+//  ## incTime(a, b, v)
+//
+//  Increment time
+//
+var incTime = _.curry(function(t, x, v) {
     return t + (x * v);
 });
 
-var dec = _.curry(function(t, x, v) {
+//
+//  ## decTime(a, b, v)
+//
+//  Decrement time
+//
+var decTime = _.curry(function(t, x, v) {
     return t - (x * v);
 });
 
@@ -203,7 +213,7 @@ var dec = _.curry(function(t, x, v) {
 //
 //  Increments the number by v
 //
-var incHours = inc(360000);
+var incHours = incTime(360000);
 
 //
 //  ## incHour(a)
@@ -217,7 +227,7 @@ var incHour = incHours(1);
 //
 //  Increments the number by v
 //
-var incMinutes = inc(60000);
+var incMinutes = incTime(60000);
 
 //
 //  ## incMinute(a)
@@ -231,7 +241,7 @@ var incMinute = incMinutes(1);
 //
 //  Increments the number by v
 //
-var incSeconds = inc(1000);
+var incSeconds = incTime(1000);
 
 //
 //  ## incSecond(a)
@@ -245,7 +255,7 @@ var incSecond = incSeconds(1);
 //
 //  Increments the number by v
 //
-var incMilliseconds = inc(1);
+var incMilliseconds = incTime(1);
 
 //
 //  ## incMillisecond(a)
@@ -259,7 +269,7 @@ var incMillisecond = incMilliseconds(1);
 //
 //  Decrements the number by v
 //
-var decHours = dec(360000);
+var decHours = decTime(360000);
 
 //
 //  ## decHour(a)
@@ -273,7 +283,7 @@ var decHour = decHours(1);
 //
 //  Decrements the number by v
 //
-var decMinutes = dec(60000);
+var decMinutes = decTime(60000);
 
 //
 //  ## decMinute(a)
@@ -287,7 +297,7 @@ var decMinute = decMinutes(1);
 //
 //  Decrements the number by v
 //
-var decSeconds = dec(1000);
+var decSeconds = decTime(1000);
 
 //
 //  ## decSecond(a)
@@ -301,7 +311,7 @@ var decSecond = decSeconds(1);
 //
 //  Decrements the number by v
 //
-var decMilliseconds = dec(1);
+var decMilliseconds = decTime(1);
 
 //
 //  ## decMillisecond(a)
@@ -332,6 +342,8 @@ _ = _
   .property('isMinutesOf', isMinutesOf)
   .property('isSecondsOf', isSecondsOf)
   .property('isMillisecondsOf', isMillisecondsOf)
+  .property('incTime', incTime)
+  .property('decTime', decTime)
   .property('incHours', incHours)
   .property('incHour', incHour)
   .property('incMinutes', incMinutes)
