@@ -48,6 +48,27 @@ Time.prototype.concat = function(s) {
 };
 
 //
+//  ### equal(a)
+//
+//
+Time.prototype.equal = function(b) {
+    return this.match({
+        Hours: function(a) {
+            return _.equal(a, b.hours);
+        },
+        Minutes: function(a) {
+            return _.equal(a, b.minutes);
+        },
+        Seconds: function(a) {
+            return _.equal(a, b.seconds);
+        },
+        Milliseconds: function(a) {
+            return _.equal(a, b.milliseconds);
+        }
+    });
+};
+
+//
 //  ### extract()
 //
 //  Extract the value from the time.
@@ -55,10 +76,10 @@ Time.prototype.concat = function(s) {
 Time.prototype.extract = function() {
     return this.match({
         Hours: function(a) {
-            return a * 1000 * 60 * 60;
+            return a * 3600000;
         },
         Minutes: function(a) {
-            return a * 1000 * 60;
+            return a * 60000;
         },
         Seconds: function(a) {
             return a * 1000;
@@ -127,11 +148,103 @@ Time.prototype.decrement = function() {
 };
 
 //
+//  ## asHours()
+//
+//  Return just the hours only of a time
+//
+Time.Hours.prototype.asHours = function() {
+    return this.map(function(a) {
+        return ((a / 3600000) % 24) * 3600000;
+    });
+};
+
+//
+//  ## asMinutes()
+//
+//  Return just the minutes only of a time
+//
+Time.Minutes.prototype.asMinutes = function() {
+    return this.map(function(a) {
+        return ((a / 60000) % 60) * 60000;
+    });
+};
+
+//
+//  ## asSeconds()
+//
+//  Return just the seconds only of a time
+//
+Time.Seconds.prototype.asSeconds = function() {
+    return this.map(function(a) {
+        return ((a / 1000) % 60) * 1000;
+    });
+};
+
+//
+//  ## asMilliseconds()
+//
+//  Return just the milliseconds only of a time
+//
+Time.Milliseconds.prototype.asMilliseconds = function() {
+    return this.map(function(a) {
+        return a % 1000;
+    });
+};
+
+//
 //  ## isTime(a)
 //
 //  Returns `true` if `a` is an instance of `Time`.
 //
 var isTime = _.isInstanceOf(Time);
+
+//
+//  ## isHours(a)
+//
+//  Returns `true` if `a` is an instance of `Time.Hours`.
+//
+var isHours = _.isInstanceOf(Time.Hours);
+
+//
+//  ## isMinutes(a)
+//
+//  Returns `true` if `a` is an instance of `Time.Minutes`.
+//
+var isMinutes = _.isInstanceOf(Time.Minutes);
+
+//
+//  ## isSeconds(a)
+//
+//  Returns `true` if `a` is an instance of `Time.Seconds`.
+//
+var isSeconds = _.isInstanceOf(Time.Seconds);
+
+//
+//  ## isMilliseconds(a)
+//
+//  Returns `true` if `a` is an instance of `Time.Milliseconds`.
+//
+var isMilliseconds = _.isInstanceOf(Time.Milliseconds);
+
+//
+//  ## timeOf()
+//
+//  Sentinel value for when an hours of a particular type is needed:
+//
+//       timeOf()
+//
+function timeOf() {
+    var self = _.getInstance(this, timeOf);
+    self.type = _.Integer;
+    return self;
+}
+
+//
+//  ## isTimeOf(a)
+//
+//  Returns `true` if `a` is an instance of `timeOf`.
+//
+var isTimeOf = _.isInstanceOf(timeOf);
 
 //
 //  ## hoursOf()
@@ -142,7 +255,7 @@ var isTime = _.isInstanceOf(Time);
 //
 function hoursOf() {
     var self = _.getInstance(this, hoursOf);
-    self.type = Number;
+    self.type = _.Integer;
     return self;
 }
 
@@ -162,7 +275,7 @@ var isHoursOf = _.isInstanceOf(hoursOf);
 //
 function minutesOf() {
     var self = _.getInstance(this, minutesOf);
-    self.type = Number;
+    self.type = _.Integer;
     return self;
 }
 
@@ -182,7 +295,7 @@ var isMinutesOf = _.isInstanceOf(minutesOf);
 //
 function secondsOf() {
     var self = _.getInstance(this, secondsOf);
-    self.type = Number;
+    self.type = _.Integer;
     return self;
 }
 
@@ -202,7 +315,7 @@ var isSecondsOf = _.isInstanceOf(secondsOf);
 //
 function millisecondsOf() {
     var self = _.getInstance(this, millisecondsOf);
-    self.type = Number;
+    self.type = _.Integer;
     return self;
 }
 
@@ -349,6 +462,26 @@ var decMillisecond = decMilliseconds(1);
 _.fo.unsafeSetValueOf(Time.prototype);
 
 //
+//  ### shrink(t)(m)
+//
+//  Shrink a time to find other possible issues around the time.
+//
+var shrink = _.curry(function(t, p, m) {
+    var accum = [t(0)],
+        n = m[p],
+        x = n;
+
+    while(x) {
+        x = x / 2;
+        x = x < 0 ? Math.ceil(x) : Math.floor(x);
+
+        if (x) accum.push(t(n - x));
+    }
+
+    return accum;
+});
+
+//
 //  append methods to the environment.
 //
 _ = _
@@ -357,10 +490,16 @@ _ = _
   .property('Minutes', Time.Minutes)
   .property('Seconds', Time.Seconds)
   .property('Milliseconds', Time.Milliseconds)
+  .property('isHours', isHours)
+  .property('isMinutes', isMinutes)
+  .property('isSeconds', isSeconds)
+  .property('isMilliseconds', isMilliseconds)
+  .property('timeOf', timeOf)
   .property('hoursOf', hoursOf)
   .property('minutesOf', minutesOf)
   .property('secondsOf', secondsOf)
   .property('millisecondsOf', millisecondsOf)
+  .property('isTimeOf', isTimeOf)
   .property('isHoursOf', isHoursOf)
   .property('isMinutesOf', isMinutesOf)
   .property('isSecondsOf', isSecondsOf)
@@ -383,11 +522,30 @@ _ = _
   .property('decSecond', decSecond)
   .property('decMilliseconds', decMilliseconds)
   .property('decMillisecond', decMillisecond)
+  .method('arb', isTimeOf, function(a, s) {
+      var types = [hoursOf, minutesOf, secondsOf, millisecondsOf];
+      return this.arb(this.oneOf(types)(), s - 1);
+  })
+  .method('arb', isHoursOf, function(a, b) {
+      return Time.Hours(this.arb(a.type, b - 1));
+  })
+  .method('arb', isMinutesOf, function(a, b) {
+      return Time.Minutes(this.arb(a.type, b - 1));
+  })
+  .method('arb', isSecondsOf, function(a, b) {
+      return Time.Seconds(this.arb(a.type, b - 1));
+  })
+  .method('arb', isMillisecondsOf, function(a, b) {
+      return Time.Milliseconds(this.arb(a.type, b - 1));
+  })
   .method('chain', isTime, function(a, b) {
       return a.chain(b);
   })
   .method('concat', isTime, function(a, b) {
       return a.concat(b);
+  })
+  .method('equal', isTime, function(a, b) {
+      return a.equal(b);
   })
   .method('extract', isTime, function(a) {
       return a.extract();
@@ -397,6 +555,18 @@ _ = _
   })
   .method('map', isTime, function(a, b) {
       return a.map(b);
+  })
+  .method('shrink', isHours, function(m) {
+      return shrink(_.Hours, 'hours')(m);
+  })
+  .method('shrink', isMinutes, function(m) {
+      return shrink(_.Minutes, 'minutes')(m);
+  })
+  .method('shrink', isSeconds, function(m) {
+      return shrink(_.Seconds, 'seconds')(m);
+  })
+  .method('shrink', isMilliseconds, function(m) {
+      return shrink(_.Milliseconds, 'milliseconds')(m);
   });
 
 exports = module.exports = _;
