@@ -291,6 +291,103 @@ Time.prototype.asMilliseconds = function() {
 };
 
 //
+//  ## toHours()
+//
+//  Convert any time to hours
+//
+Time.prototype.toHours = function() {
+    var env = this;
+
+    return env.match({
+        Hours: function() {
+            return env;
+        },
+        Minutes: function(a) {
+            return Time.Hours(a / 60);
+        },
+        Seconds: function(a) {
+            return Time.Hours(a / 60 / 60);
+        },
+        Milliseconds: function(a) {
+            return Time.Hours(a / 1000 / 60);
+        }
+    });
+};
+
+//
+//  ## toMinutes()
+//
+//  Convert any time to minutes
+//
+Time.prototype.toMinutes = function() {
+    var env = this;
+
+    return env.match({
+        Hours: function(a) {
+            return Time.Minutes(a * Time.MINUTES_TO_HOURS);
+        },
+        Minutes: function() {
+            return env;
+        },
+        Seconds: function(a) {
+            return Time.Minutes(a / 60);
+        },
+        Milliseconds: function(a) {
+            return Time.Minutes(a / 1000 / 60);
+        }
+    });
+};
+
+//
+//  ## toSeconds()
+//
+//  Convert any time to seconds
+//
+Time.prototype.toSeconds = function() {
+    var env = this;
+
+    return env.match({
+        Hours: function(a) {
+            return Time.Seconds(a * Time.HOURS_TO_SECONDS);
+        },
+        Minutes: function(a) {
+            return Time.Seconds(a * Time.MINUTES_TO_SECONDS);
+        },
+        Seconds: function() {
+            return env;
+        },
+        Milliseconds: function(a) {
+            return Time.Seconds(a / 1000);
+        }
+    });
+};
+
+//
+//  ## toMilliseconds()
+//
+//  Convert any time to milliseconds
+//
+Time.prototype.toMilliseconds = function() {
+    var env = this;
+
+    return env.match({
+        Hours: function(a) {
+            return Time.Seconds(a * Time.MILLISECONDS_TO_HOURS);
+        },
+        Minutes: function(a) {
+            return Time.Seconds(a * Time.MILLISECONDS_TO_MINUTES);
+        },
+        Seconds: function(a) {
+            return Time.Seconds(a * Time.MILLISECONDS_TO_SECONDS);
+        },
+        Milliseconds: function() {
+            return env;
+        }
+    });
+};
+
+
+//
 //  ## isTime(a)
 //
 //  Returns `true` if `a` is an instance of `Time`.

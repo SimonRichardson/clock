@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Clock with squishy-pants.js</title>
+    <meta charset="utf-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="../clock.browser.js"></script>
+    <script>
+      function event(element, name, callback) {
+          if(element.addEventListener) {
+              element.addEventListener(name, callback, false);
+          } else {
+              element.attachEvent('on' + name, callback);
+          }
+      }
+
+      event(window, 'load', function() {
+          var _ = squishy,
+              log = _.IO(_.constant(function(x) {
+                  document.getElementById('output').innerHTML = x + '<br />';
+              })),
+              logger = _.curry(function(prefix, value) {
+                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              }),
+
+
+              hoursToString = function(a) {
+                  return a.asHours().toHours().hours;
+              },
+              minutesToString = function(a) {
+                  return a.asMinutes().toMinutes().minutes;
+              },
+              secondsToString = function(a) {
+                  return a.asSeconds().toSeconds().seconds;
+              },
+
+
+              pad = function(a) {
+                  var value = a.toString();
+                  return value.length == 1 ? '0' + value : value;
+              },
+
+
+              time = _.Hours(2).concat(_.Minutes(1)).concat(_.Seconds(10)),
+              origin = _.Stream.of(time),
+              pulse = _.every(_.Seconds(1));
+
+
+          origin.append(
+              pulse,
+              function(a, b) {
+                  return _.concat(a, b);
+              }
+          ).fork(function(time) {
+              logger('Time', _.compose(pad, hoursToString)(time) + ':' + _.compose(pad, minutesToString)(time) + '.' + _.compose(pad, secondsToString)(time));
+          });
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span8 offset2">
+          <h1>Clock using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
+          <hr />
+          <div class="alert" id="output"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
