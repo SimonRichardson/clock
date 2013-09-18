@@ -4,7 +4,7 @@ function every(time) {
 
     return _.Stream(function(next, done) {
         id = setInterval(function() {
-            // Remove time and use state
+            /* Remove time and use state */
             time = time.concat(value);
             next(time);
         }, value.extract());
