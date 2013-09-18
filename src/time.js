@@ -372,13 +372,13 @@ Time.prototype.toMilliseconds = function() {
 
     return env.match({
         Hours: function(a) {
-            return Time.Seconds(a * Time.MILLISECONDS_TO_HOURS);
+            return Time.Milliseconds(a * Time.MILLISECONDS_TO_HOURS);
         },
         Minutes: function(a) {
-            return Time.Seconds(a * Time.MILLISECONDS_TO_MINUTES);
+            return Time.Milliseconds(a * Time.MILLISECONDS_TO_MINUTES);
         },
         Seconds: function(a) {
-            return Time.Seconds(a * Time.MILLISECONDS_TO_SECONDS);
+            return Time.Milliseconds(a * Time.MILLISECONDS_TO_SECONDS);
         },
         Milliseconds: function() {
             return env;
