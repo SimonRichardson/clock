@@ -1,5 +1,3 @@
-var _ = require('squishy-pants/lib/squishy-pants');
-
 //
 //   # Time
 //
@@ -669,5 +667,3 @@ _ = _
   .method('shrink', isMilliseconds, function(m) {
       return shrink(_.Milliseconds, 'milliseconds')(m);
   });
-
-exports = module.exports = _;

@@ -5,3 +5,5 @@ coverage
 docs
 node_modules
 tags
+clock*.js
+lib/clock*.js

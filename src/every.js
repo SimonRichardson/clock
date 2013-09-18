@@ -1,5 +1,3 @@
-var _ = require('../src/time');
-
 function every(time) {
     var value = time,
         id;
@@ -13,7 +11,8 @@ function every(time) {
     });
 }
 
+//
+//  append methods to the squishy environment.
+//
 _ = _
     .property('every', every);
-
-exports = module.exports = _;
