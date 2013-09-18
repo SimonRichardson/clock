@@ -17,10 +17,20 @@
       event(window, 'load', function() {
           var _ = squishy,
               log = _.IO(_.constant(function(x) {
-                  document.getElementById('output').innerHTML = x + '<br />';
+                  document.getElementById('output').innerHTML = x;
               })),
-              logger = _.curry(function(prefix, value) {
-                  log.ap(_.IO.of(prefix + ' > ' + value)).unsafePerform();
+              node = _.curry(function(name, classes, value) {
+                  return '<' + name + ' class="' + classes + '">' + value + '</' + name + '>';
+              }),
+              div = node('div'),
+              span = node('span'),
+              output = _.curry(function(hours, minutes, seconds) {
+                  var h = span('digits hours', hours),
+                      m = span('digits minutes', minutes),
+                      s = span('digits seconds', seconds),
+                      colon = span('colon', ':');
+
+                  log.ap(_.IO.of(h + colon + m + colon + s)).unsafePerform();
               }),
 
 
@@ -35,13 +45,30 @@
               },
 
 
+              createTime = function() {
+                  var ioDate = _.IO.of(
+                          function() {
+                              return new Date(Date.now())
+                          }
+                      ),
+                      date = ioDate.unsafePerform()(),
+                      hours = date.getHours(),
+                      minutes = date.getMinutes(),
+                      seconds = date.getSeconds();
+
+                  return _.Hours(hours)
+                            .concat(_.Minutes(minutes))
+                            .concat(_.Seconds(seconds));
+              },
+
+
               pad = function(a) {
                   var value = a.toString();
                   return value.length == 1 ? '0' + value : value;
               },
 
 
-              time = _.Hours(2).concat(_.Minutes(1)).concat(_.Seconds(10)),
+              time = createTime(),
               origin = _.Stream.of(time),
               pulse = _.every(_.Seconds(1));
 
@@ -52,11 +79,44 @@
                   return _.concat(a, b);
               }
           ).fork(function(time) {
-              logger('Time', _.compose(pad, hoursToString)(time) + ':' + _.compose(pad, minutesToString)(time) + '.' + _.compose(pad, secondsToString)(time));
+              var make = function(f, time) {
+                  return _.compose(pad, f)(time);
+              };
+
+              output(
+                      make(hoursToString, time),
+                      make(minutesToString, time),
+                      make(secondsToString, time)
+                  );
           });
       });
 
     </script>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        .clock {
+            padding: 40px 0 40px 6px;
+            position: relative;
+            background-color: #272e38;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 80px;
+            font-family: 'Ubuntu Mono', sans-serif;
+            display: inline-block;
+        }
+        .clock > .digits {
+            color: #cacaca;
+            margin: 0 5px 0 0;
+            padding: 0 5px;
+            border-radius: 6px;
+            border: 2px solid #20262E;
+            background-color: #313945;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .clock > .colon {
+            color: #4A5463;
+        }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -64,7 +124,13 @@
         <div class="span8 offset2">
           <h1>Clock using <a href="https://github.com/SimonRichardson/squishy-pants">squishy-pants.js</a></h1>
           <hr />
-          <div class="alert" id="output"></div>
+          <div class="alert">
+            Clock created using the Time &amp; squishy-pants Stream structures.
+            <br />
+            The graphical part is all CSS anf the font is 'Ubuntu Mono' from Google.
+          </div>
+          <hr />
+          <div class="clock" id="output"></div>
         </div>
       </div>
     </div>
