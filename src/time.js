@@ -20,6 +20,27 @@ var Time = _.taggedSum('Time', {
     Milliseconds: ['milliseconds']
 });
 
+/* Internal constants for multiplications */
+Time.MILLISECONDS_TO_HOURS = 1000 * 60 * 60;
+Time.MILLISECONDS_TO_MINUTES = 1000 * 60;
+Time.MILLISECONDS_TO_SECONDS = 1000;
+Time.MILLISECONDS_TO_MILLISECONDS = 1;
+
+Time.SECONDS_TO_HOURS = 60 * 60;
+Time.SECONDS_TO_MINUTES = 60;
+Time.SECONDS_TO_SECONDS = 1;
+Time.SECONDS_TO_MILLISECONDS = 1000;
+
+Time.MINUTES_TO_HOURS = 60;
+Time.MINUTES_TO_MINUTES = 1;
+Time.MINUTES_TO_SECONDS = 60;
+Time.MINUTES_TO_MILLISECONDS = 1000 * 60;
+
+Time.HOURS_TO_HOURS = 1;
+Time.HOURS_TO_MINUTES = 60;
+Time.HOURS_TO_SECONDS = 60 * 60;
+Time.HOURS_TO_MILLISECONDS = 1000 * 60 * 60;
+
 //
 //  ### chain(f)
 //
@@ -76,13 +97,13 @@ Time.prototype.equal = function(b) {
 Time.prototype.extract = function() {
     return this.match({
         Hours: function(a) {
-            return a * 3600000;
+            return a * Time.MILLISECONDS_TO_HOURS;
         },
         Minutes: function(a) {
-            return a * 60000;
+            return a * Time.MILLISECONDS_TO_MINUTES;
         },
         Seconds: function(a) {
-            return a * 1000;
+            return a * Time.MILLISECONDS_TO_SECONDS;
         },
         Milliseconds: _.identity
     });
@@ -152,9 +173,29 @@ Time.prototype.decrement = function() {
 //
 //  Return just the hours only of a time
 //
-Time.Hours.prototype.asHours = function() {
-    return this.map(function(a) {
-        return ((a / 3600000) % 24) * 3600000;
+Time.prototype.asHours = function() {
+    /* 24 hour wrapper */
+    var wrap = function(a) {
+        return a < 0 ? 24 + a : a;
+    };
+
+    return this.match({
+        Hours: function(a) {
+            /* hours -> hours */
+            return Time.Hours(wrap(a % 24));
+        },
+        Minutes: function(a) {
+            /* minutes -> hours -> minutes */
+            return Time.Minutes(wrap(Math.floor(a / 60) % 24) * Time.MINUTES_TO_HOURS);
+        },
+        Seconds: function(a) {
+            /* seconds -> hours -> seconds */
+            return Time.Seconds(wrap(Math.floor(a / 60 / 60) % 24) * Time.SECONDS_TO_HOURS);
+        },
+        Milliseconds: function(a) {
+            /* milliseconds -> hours -> milliseconds */
+            return Time.Milliseconds(wrap(Math.floor(a / 1000 / 60 / 60) % 24) * Time.MILLISECONDS_TO_HOURS);
+        }
     });
 };
 
@@ -163,9 +204,29 @@ Time.Hours.prototype.asHours = function() {
 //
 //  Return just the minutes only of a time
 //
-Time.Minutes.prototype.asMinutes = function() {
-    return this.map(function(a) {
-        return ((a / 60000) % 60) * 60000;
+Time.prototype.asMinutes = function() {
+    /* minute wrapper */
+    var wrap = function(a) {
+        return a < 0 ? 60 + a : a;
+    };
+
+    return this.match({
+        Hours: function(a) {
+            /* hours -> minutes -> hours */
+            return Time.Hours(wrap(Math.floor(a * Time.HOURS_TO_MINUTES) % 60) / 60);
+        },
+        Minutes: function(a) {
+            /* minutes -> minutes */
+            return Time.Minutes(wrap(a % 60));
+        },
+        Seconds: function(a) {
+            /* seconds -> minutes -> seconds */
+            return Time.Seconds(wrap(Math.floor(a / 60) % 60) * Time.SECONDS_TO_MINUTES);
+        },
+        Milliseconds: function(a) {
+            /* milliseconds -> minutes -> milliseconds */
+            return Time.Milliseconds(wrap(Math.floor(a / 1000 / 60) % 60) * Time.MILLISECONDS_TO_MINUTES);
+        }
     });
 };
 
@@ -174,9 +235,29 @@ Time.Minutes.prototype.asMinutes = function() {
 //
 //  Return just the seconds only of a time
 //
-Time.Seconds.prototype.asSeconds = function() {
-    return this.map(function(a) {
-        return ((a / 1000) % 60) * 1000;
+Time.prototype.asSeconds = function() {
+    /* seconds wrapper */
+    var wrap = function(a) {
+        return a < 0 ? 60 + a : a;
+    };
+
+    return this.match({
+        Hours: function(a) {
+            /* hours -> seconds -> hours */
+            return Time.Hours(wrap(Math.floor(a * Time.HOURS_TO_SECONDS) % 60) / 60 / 60);
+        },
+        Minutes: function(a) {
+            /* minutes -> seconds -> minutes */
+            return Time.Minutes(wrap(Math.floor(a * Time.MINUTES_TO_SECONDS) % 60) / 60);
+        },
+        Seconds: function(a) {
+            /* seconds -> seconds */
+            return Time.Seconds(wrap(a % 60));
+        },
+        Milliseconds: function(a) {
+            /* milliseconds -> seconds -> milliseconds */
+            return Time.Milliseconds(wrap(Math.floor(a / 1000) % 60) * Time.MILLISECONDS_TO_SECONDS);
+        }
     });
 };
 
@@ -185,9 +266,29 @@ Time.Seconds.prototype.asSeconds = function() {
 //
 //  Return just the milliseconds only of a time
 //
-Time.Milliseconds.prototype.asMilliseconds = function() {
-    return this.map(function(a) {
-        return a % 1000;
+Time.prototype.asMilliseconds = function() {
+    /* milliseconds wrapper */
+    var wrap = function(a) {
+        return a < 0 ? 1000 + a : a;
+    };
+
+    return this.match({
+        Hours: function(a) {
+            /* hours -> milliseconds -> hours */
+            return Time.Hours(wrap(Math.floor(a * Time.HOURS_TO_MILLISECONDS) % 1000) / 1000 / 60 / 60);
+        },
+        Minutes: function(a) {
+            /* minutes -> milliseconds -> minutes */
+            return Time.Minutes(wrap(Math.floor(a * Time.MINUTES_TO_MILLISECONDS) % 1000) / 60 / 60);
+        },
+        Seconds: function(a) {
+            /* seconds -> milliseconds -> seconds */
+            return Time.Seconds(wrap(Math.floor(a * Time.SECONDS_TO_MILLISECONDS) % 1000) / 60);
+        },
+        Milliseconds: function(a) {
+            /* milliseconds -> milliseconds */
+            return Time.Milliseconds(wrap(a % 1000));
+        }
     });
 };
 
