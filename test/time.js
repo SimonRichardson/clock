@@ -192,5 +192,67 @@ exports.time = {
             return _.expect(x).toBe(y);
         },
         [_.millisecondsOf(), _.millisecondsOf(), _.millisecondsOf()]
+    ),
+    'when extracting hours together should return correct milliseconds': _.check(
+        function(a) {
+            return _.expect(a.extract()).toBe(a.hours * 1000 * 60 * 60);
+        },
+        [_.hoursOf()]
+    ),
+    'when extracting minutes together should return correct milliseconds': _.check(
+        function(a) {
+            return _.expect(a.extract()).toBe(a.minutes * 1000 * 60);
+        },
+        [_.minutesOf()]
+    ),
+    'when extracting seconds together should return correct milliseconds': _.check(
+        function(a) {
+            return _.expect(a.extract()).toBe(a.seconds * 1000);
+        },
+        [_.secondsOf()]
+    ),
+    'when extracting milliseconds together should return correct milliseconds': _.check(
+        function(a) {
+            return _.expect(a.extract()).toBe(a.milliseconds);
+        },
+        [_.millisecondsOf()]
+    ),
+    'when folding over time should return identity': _.check(
+        function(a) {
+            var expected = a.match({
+                Hours: _.identity,
+                Minutes: _.identity,
+                Seconds: _.identity,
+                Milliseconds: _.identity,
+            });
+
+            return _.expect(a.fold(_.identity, _.identity, _.identity, _.identity)).toBe(expected);
+        },
+        [_.timeOf()]
+    ),
+    /* Because floating point sucks! */
+    'when mapping over hours should return correct time': _.check(
+        function(a) {
+            return _.expect(a.map(_.inc)).toBe(_.Hours(((a.hours * 1000 * 60 * 60) + 1) / 1000 / 60 / 60));
+        },
+        [_.hoursOf()]
+    ),
+    'when mapping over minutes should return correct time': _.check(
+        function(a) {
+            return _.expect(a.map(_.inc)).toBe(_.Minutes(((a.minutes * 1000 * 60) + 1) / 1000 / 60));
+        },
+        [_.minutesOf()]
+    ),
+    'when mapping over seconds should return correct time': _.check(
+        function(a) {
+            return _.expect(a.map(_.inc)).toBe(_.Seconds(((a.seconds * 1000) + 1) / 1000));
+        },
+        [_.secondsOf()]
+    ),
+    'when mapping over milliseconds should return correct time': _.check(
+        function(a) {
+            return _.expect(a.map(_.inc)).toBe(_.Milliseconds(a.milliseconds + 1));
+        },
+        [_.millisecondsOf()]
     )
 };
