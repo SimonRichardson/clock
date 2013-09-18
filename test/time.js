@@ -156,5 +156,41 @@ exports.time = {
             return _.expect(a.asMilliseconds()).toBe(expected);
         },
         [_.timeOf()]
+    ),
+    'when concatenating hours together should return correct time': _.check(
+        function(a, b, c) {
+            var x = a.concat(b.concat(c)).extract(),
+                y = a.extract() + b.extract() + c.extract();
+
+            return _.expect(x).toBe(y);
+        },
+        [_.hoursOf(), _.hoursOf(), _.hoursOf()]
+    ),
+    'when concatenating minutes together should return correct time': _.check(
+        function(a, b, c) {
+            var x = a.concat(b.concat(c)).extract(),
+                y = a.extract() + b.extract() + c.extract();
+
+            return _.expect(x).toBe(y);
+        },
+        [_.minutesOf(), _.minutesOf(), _.minutesOf()]
+    ),
+    'when concatenating seconds together should return correct time': _.check(
+        function(a, b, c) {
+            var x = a.concat(b.concat(c)).extract(),
+                y = a.extract() + b.extract() + c.extract();
+
+            return _.expect(x).toBe(y);
+        },
+        [_.secondsOf(), _.secondsOf(), _.secondsOf()]
+    ),
+    'when concatenating milliseconds together should return correct time': _.check(
+        function(a, b, c) {
+            var x = a.concat(b.concat(c)).extract(),
+                y = a.extract() + b.extract() + c.extract();
+
+            return _.expect(x).toBe(y);
+        },
+        [_.millisecondsOf(), _.millisecondsOf(), _.millisecondsOf()]
     )
 };
