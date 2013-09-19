@@ -25,6 +25,6 @@ Install [commonjs-everywhere](), it's easier to install it globally ```-g```:
 
 Then run ```npm test```, followed by the following:
 
-    cjsify bin/clock.js --export _ > clock.browser.js
+    cjsify bin/clock.js --export squishy > clock.browser.js
 
 Then you can include clock.browser.js in your html page.

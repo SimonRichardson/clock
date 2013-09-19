@@ -12,7 +12,7 @@
     "test": "grunt default"
   },
   "dependencies": {
-    "squishy-pants": "0.0.4"
+    "squishy-pants": "0.0.5"
   },
   "devDependencies": {
     "grunt-cli": "0.1.9",
