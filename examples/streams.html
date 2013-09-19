@@ -15,7 +15,6 @@
       }
 
       event(window, 'load', function() {
-          console.log(squishy);
           var _ = squishy,
               log = _.IO(_.constant(function(x) {
                   document.getElementById('output').innerHTML = x;
