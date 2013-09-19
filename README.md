@@ -3,6 +3,10 @@ clock
 
 Experimenting with time in javascript.
 
+## Build status
+
+[![Build Status](https://api.travis-ci.org/SimonRichardson/clock.png)](https://travis-ci.org/SimonRichardson/clock)
+
 ## Building
 
 Install the development dependencies with [npm](https://npmjs.org/):
