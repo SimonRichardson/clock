@@ -20,33 +20,57 @@
               body = _.IO(function() {
                   return document.getElementsByTagName('body')[0];
               }),
-              canvas = _.IO(function() {
-                  return document.getElementById('canvas');
-              }),
               image = _.IO(function() {
                   return document.getElementById('mario');
               }),
 
-              keyboard = _.Stream(
+              keyboardArrows = _.Stream(
                   function(next, done) {
+                      var current = {
+                              x: 0,
+                              y: 0
+                          },
+                          x = _.Lens.objectLens('x'),
+                          y = _.Lens.objectLens('y');
+
+                      /* This feels like a bit hack because we store the state of `current` */
                       event(body.unsafePerform(), 'keydown', function(e) {
-                          var code = e.keyCode;
-                          if (code >= 37 && code <= 40) {
-                              next({  
-                                x : code === 37 ? -1 : code === 39 ? 1 : 0,
-                                y : code === 40 ? -1 : code === 38 ? 1 : 0
-                              });
+                          var c = current,
+                              code = e.keyCode;
+
+                          if (code === 37 || code === 39) {
+                              c = x.run(c).set(code === 37 ? -1 : code === 39 ? 1 : 0);
+                          } else if(code === 40 || code === 38) {
+                              c = y.run(c).set(code === 40 ? -1 : code === 38 ? 1 : 0);
                           }
+
+                          current = c;
+
+                          next(c);
                       });
-                      event(body.unsafePerform(), 'keyup', function(e) {                        
-                          next({  
-                            x : 0,
-                            y : 0
-                          });
+                      event(body.unsafePerform(), 'keyup', function(e) {
+                          var c = current,
+                              code = e.keyCode;
+
+                          if (code === 37 || code === 39) {
+                              c = x.run(c).set(0);
+                          } else if(code === 40 || code === 38) {
+                              c = y.run(c).set(0);
+                          }
+
+                          current = c;
+
+                          next(c);
                       })
                   }
               ),
 
+              // mario lenses
+              x = _.Lens.objectLens('x'),
+              y = _.Lens.objectLens('y'),
+              vx = _.Lens.objectLens('vx'),
+              vy = _.Lens.objectLens('vy'),
+              dir = _.Lens.objectLens('dir'),
 
               mario = {
                       x: 0,
@@ -55,65 +79,58 @@
                       vy: 0,
                       dir: 'right'
               },
-              jump = _.curry(function(dir, mario) {
-                  var lensVy = _.Lens.objectLens('vy').run(mario);
-                  return lensVy.set((dir.y > 0 && mario.y === 0) ? mario.vy + 6 : mario.vy);
+              jump = _.curry(function(y, mario) {
+                  return vy.run(mario).set((y > 0 && mario.y === 0) ? mario.vy + 6 : mario.vy);
               }),
               gravity = _.curry(function(t, mario) {
-                  var lensVy = _.Lens.objectLens('vy').run(mario);
-                  return lensVy.set(mario.y > 0 ? mario.vy - 0.5 : mario.vy);
+                  return vy.run(mario).set(mario.y > 0 ? mario.vy - 0.5 : 0);
               }),
               physics = _.curry(function(t, mario) {
-                  var lensX = _.Lens.objectLens('x').run(mario),
-                      mX = lensX.set(Math.max(0, Math.min(600 - 32, mario.x + (t * mario.vx)))),
-
-                      lensY = _.Lens.objectLens('y').run(mX),
-                      mY = lensY.set(Math.max(0, mario.y + t * mario.vy));
+                  var mX = x.run(mario).set(Math.max(0, Math.min(600 - 32, mario.x + (t * mario.vx)))),
+                      mY = y.run(mX).set(Math.max(0, mario.y + t * mario.vy));
                   
                   return mY;
               }),
-              walk = _.curry(function(dir, mario) {
-                  var lensVx = _.Lens.objectLens('vx').run(mario),
-                      mVx = lensVx.set(dir.x + (mario.vx / 10)),
+              walk = _.curry(function(x, mario) {
+                  var lensVx = vx.run(mario),
+                      mVx = lensVx.set(x + (mario.vx / 10)),
 
-                      lensDir = _.Lens.objectLens('dir').run(mVx),
-                      mDir = lensDir.set(dir.x < 0 ? 'left' : dir.x > 0 ? 'right' : lensDir.get());
+                      lensDir = dir.run(mVx),
+                      mDir = lensDir.set(x < 0 ? 'left' : x > 0 ? 'right' : lensDir.get());
 
                   return mDir;
               }),
               step = function(mario, t, dir) {
                   var time = t || 0,
-                      direction = dir || {x: 0, y: 0},
+                      direction = dir || {x: 0, y: 0};
 
-                      p = physics(time),
-                      w = walk(direction),
-                      g = gravity(time),
-                      j = jump(direction);
-
-                  return _.compose(j, _.compose(g, _.compose(w, p)))(mario);
+                  return _.andThen(
+                            physics(time), 
+                            _.andThen(
+                                walk(direction.x), 
+                                _.andThen(
+                                    gravity(time), 
+                                    jump(direction.y)
+                                )
+                            )
+                        )(mario);
               },
               render = _.curry(function(image, mario) {
                   var verb = mario.y > 0 ? 'jump' :
-                             Math.abs(mario.vx) > 0.05 ? 'walk' :
-                                              'stand',
+                             Math.abs(mario.vx) > 0.05 ? 'walk' : 'stand',
 
                       src = 'imgs/mario/' + verb + '/' + mario.dir + '.gif',
                       node = image.unsafePerform();
 
                   /* TODO : Abstract this away, very bad */
-                  if (src !== node.relativeSrc) {
+                  if (src !== node.rel) {
                       node.src = src;
-                      node.relativeSrc = src;
+                      node.rel = src;
                   }
                   node.style.left = mario.x + 'px';
-                  node.style.top = 400 - (mario.y + 130) + 'px';   
+                  node.style.top = 400 - (mario.y + 130) + 'px'; 
               }),
-              draw = render(image),
-              optional = function(r) {
-                  return function() {
-                      return r.f ? r.f.apply(null, _.rest(arguments)) : null;
-                  }
-              };
+              draw = render(image);
 
           // Merge two streams together to produce a tuple of last know values.
           _.Stream.prototype.andWith = function(a) {
@@ -148,8 +165,8 @@
               function(a, b) {
                   return 2;
               }
-          ).andWith(keyboard).scan(
-              mario,
+          ).andWith(keyboardArrows).scan(
+              x.run(mario).set(_.randomRange(50, 350)),
               function(a, b) {
                   return step(a, b._1, b._2);
               }
