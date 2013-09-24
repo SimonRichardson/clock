@@ -24,6 +24,20 @@
                   return document.getElementById('mario');
               }),
 
+              key = function(type) {
+                  return _.Stream(
+                      function(next, done) {
+                          event(
+                              body.unsafePerform(), 
+                              'key' + type, 
+                              function(e) {
+                                  next(e.keyCode);
+                              }
+                          );
+                      }
+                  );
+              },
+
               keyboardArrows = _.Stream(
                   function(next, done) {
                       var current = {
@@ -31,37 +45,44 @@
                               y: 0
                           },
                           x = _.Lens.objectLens('x'),
-                          y = _.Lens.objectLens('y');
+                          y = _.Lens.objectLens('y'),
+                          down = key('down').map(
+                              function(code) {
+                                  var c = current;
 
-                      /* This feels like a bit hack because we store the state of `current` */
-                      event(body.unsafePerform(), 'keydown', function(e) {
-                          var c = current,
-                              code = e.keyCode;
+                                  if (code === 37 || code === 39) {
+                                      c = x.run(c).set(code === 37 ? -1 : code === 39 ? 1 : 0);
+                                  } else if(code === 40 || code === 38) {
+                                      c = y.run(c).set(code === 40 ? -1 : code === 38 ? 1 : 0);
+                                  }
+                                  
+                                  /* TODO : Remove this state */
+                                  current = c;
 
-                          if (code === 37 || code === 39) {
-                              c = x.run(c).set(code === 37 ? -1 : code === 39 ? 1 : 0);
-                          } else if(code === 40 || code === 38) {
-                              c = y.run(c).set(code === 40 ? -1 : code === 38 ? 1 : 0);
-                          }
+                                  return c;
+                              }
+                          ),
+                          up = key('up').map(
+                              function(code) {
+                                  var c = current;
 
-                          current = c;
+                                  if (code === 37 || code === 39) {
+                                      c = x.run(c).set(0);
+                                  } else if(code === 40 || code === 38) {
+                                      c = y.run(c).set(0);
+                                  }
 
-                          next(c);
-                      });
-                      event(body.unsafePerform(), 'keyup', function(e) {
-                          var c = current,
-                              code = e.keyCode;
+                                  /* TODO : Remove this state */
+                                  current = c;
 
-                          if (code === 37 || code === 39) {
-                              c = x.run(c).set(0);
-                          } else if(code === 40 || code === 38) {
-                              c = y.run(c).set(0);
-                          }
+                                  return c;
+                              }
+                          );
 
-                          current = c;
-
-                          next(c);
-                      })
+                      down.merge(up).fork(
+                          next,
+                          done
+                      );
                   }
               ),
 
