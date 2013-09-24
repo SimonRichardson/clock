@@ -55,7 +55,7 @@
                                   } else if(code === 40 || code === 38) {
                                       c = y.run(c).set(code === 40 ? -1 : code === 38 ? 1 : 0);
                                   }
-                                  
+
                                   /* TODO : Remove this state */
                                   current = c;
 
@@ -140,18 +140,31 @@
                   var verb = mario.y > 0 ? 'jump' :
                              Math.abs(mario.vx) > 0.05 ? 'walk' : 'stand',
 
-                      src = 'imgs/mario/' + verb + '/' + mario.dir + '.gif',
-                      node = image.unsafePerform();
+                      src = 'imgs/mario/' + verb + '/' + mario.dir + '.gif';
 
-                  /* TODO : Abstract this away, very bad */
+                  updateImage(image, {
+                      src: src,
+                      position: {
+                          x: mario.x,
+                          y: 400 - (mario.y + 132)
+                      }
+                  });
+                   
+              }),
+              draw = render(image),
+              updateImage = function(image, props) {
+                  // Need to find away to interact with the dom correctly.
+                  var node = image.unsafePerform(),
+                      src = props.src;
+
                   if (src !== node.rel) {
                       node.src = src;
                       node.rel = src;
                   }
-                  node.style.left = mario.x + 'px';
-                  node.style.top = 400 - (mario.y + 130) + 'px'; 
-              }),
-              draw = render(image);
+
+                  node.style.left = props.position.x + 'px';
+                  node.style.top = props.position.y + 'px';
+              };
 
           _.tick().map(
               function(a, b) {
