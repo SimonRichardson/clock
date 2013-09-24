@@ -2,7 +2,7 @@ function every(time) {
     var value = time,
         id;
 
-    return _.Stream(function(next, done) {
+    return squishy.Stream(function(next, done) {
         id = setInterval(function() {
             /* Remove time and use state */
             time = time.concat(value);
@@ -14,5 +14,5 @@ function every(time) {
 //
 //  append methods to the squishy environment.
 //
-_ = _
+squishy = squishy
     .property('every', every);

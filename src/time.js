@@ -11,7 +11,7 @@
 //   * `fold(h, m, s, ms)` - Applies functions to value of time.
 //   * `map(f)` - Functor map
 //
-var Time = _.taggedSum('Time', {
+var Time = squishy.taggedSum('Time', {
     Hours: ['hours'],
     Minutes: ['minutes'],
     Seconds: ['seconds'],
@@ -58,10 +58,10 @@ Time.prototype.chain = function(f) {
 Time.prototype.concat = function(s) {
     var env = this,
         value = env.extract();
-    return _.map(
+    return squishy.map(
             s,
             function(y) {
-                return _.concat(value, y);
+                return squishy.concat(value, y);
             }
         );
 };
@@ -73,16 +73,16 @@ Time.prototype.concat = function(s) {
 Time.prototype.equal = function(b) {
     return this.match({
         Hours: function(a) {
-            return _.equal(a, b.hours);
+            return squishy.equal(a, b.hours);
         },
         Minutes: function(a) {
-            return _.equal(a, b.minutes);
+            return squishy.equal(a, b.minutes);
         },
         Seconds: function(a) {
-            return _.equal(a, b.seconds);
+            return squishy.equal(a, b.seconds);
         },
         Milliseconds: function(a) {
-            return _.equal(a, b.milliseconds);
+            return squishy.equal(a, b.milliseconds);
         }
     });
 };
@@ -103,7 +103,7 @@ Time.prototype.extract = function() {
         Seconds: function(a) {
             return a * Time.MILLISECONDS_TO_SECONDS;
         },
-        Milliseconds: _.identity
+        Milliseconds: squishy.identity
     });
 };
 
@@ -392,35 +392,35 @@ Time.prototype.toMilliseconds = function() {
 //
 //  Returns `true` if `a` is an instance of `Time`.
 //
-var isTime = _.isInstanceOf(Time);
+var isTime = squishy.isInstanceOf(Time);
 
 //
 //  ## isHours(a)
 //
 //  Returns `true` if `a` is an instance of `Time.Hours`.
 //
-var isHours = _.isInstanceOf(Time.Hours);
+var isHours = squishy.isInstanceOf(Time.Hours);
 
 //
 //  ## isMinutes(a)
 //
 //  Returns `true` if `a` is an instance of `Time.Minutes`.
 //
-var isMinutes = _.isInstanceOf(Time.Minutes);
+var isMinutes = squishy.isInstanceOf(Time.Minutes);
 
 //
 //  ## isSeconds(a)
 //
 //  Returns `true` if `a` is an instance of `Time.Seconds`.
 //
-var isSeconds = _.isInstanceOf(Time.Seconds);
+var isSeconds = squishy.isInstanceOf(Time.Seconds);
 
 //
 //  ## isMilliseconds(a)
 //
 //  Returns `true` if `a` is an instance of `Time.Milliseconds`.
 //
-var isMilliseconds = _.isInstanceOf(Time.Milliseconds);
+var isMilliseconds = squishy.isInstanceOf(Time.Milliseconds);
 
 //
 //  ## timeOf()
@@ -430,8 +430,8 @@ var isMilliseconds = _.isInstanceOf(Time.Milliseconds);
 //       timeOf()
 //
 function timeOf() {
-    var self = _.getInstance(this, timeOf);
-    self.type = _.Integer;
+    var self = squishy.getInstance(this, timeOf);
+    self.type = squishy.Integer;
     return self;
 }
 
@@ -440,7 +440,7 @@ function timeOf() {
 //
 //  Returns `true` if `a` is an instance of `timeOf`.
 //
-var isTimeOf = _.isInstanceOf(timeOf);
+var isTimeOf = squishy.isInstanceOf(timeOf);
 
 //
 //  ## hoursOf()
@@ -450,8 +450,8 @@ var isTimeOf = _.isInstanceOf(timeOf);
 //       hoursOf()
 //
 function hoursOf() {
-    var self = _.getInstance(this, hoursOf);
-    self.type = _.Integer;
+    var self = squishy.getInstance(this, hoursOf);
+    self.type = squishy.Integer;
     return self;
 }
 
@@ -460,7 +460,7 @@ function hoursOf() {
 //
 //  Returns `true` if `a` is an instance of `hoursOf`.
 //
-var isHoursOf = _.isInstanceOf(hoursOf);
+var isHoursOf = squishy.isInstanceOf(hoursOf);
 
 //
 //  ## minutesOf()
@@ -470,8 +470,8 @@ var isHoursOf = _.isInstanceOf(hoursOf);
 //       minutesOf()
 //
 function minutesOf() {
-    var self = _.getInstance(this, minutesOf);
-    self.type = _.Integer;
+    var self = squishy.getInstance(this, minutesOf);
+    self.type = squishy.Integer;
     return self;
 }
 
@@ -480,7 +480,7 @@ function minutesOf() {
 //
 //  Returns `true` if `a` is an instance of `minutesOf`.
 //
-var isMinutesOf = _.isInstanceOf(minutesOf);
+var isMinutesOf = squishy.isInstanceOf(minutesOf);
 
 //
 //  ## secondsOf()
@@ -490,8 +490,8 @@ var isMinutesOf = _.isInstanceOf(minutesOf);
 //       secondsOf()
 //
 function secondsOf() {
-    var self = _.getInstance(this, secondsOf);
-    self.type = _.Integer;
+    var self = squishy.getInstance(this, secondsOf);
+    self.type = squishy.Integer;
     return self;
 }
 
@@ -500,7 +500,7 @@ function secondsOf() {
 //
 //  Returns `true` if `a` is an instance of `secondsOf`.
 //
-var isSecondsOf = _.isInstanceOf(secondsOf);
+var isSecondsOf = squishy.isInstanceOf(secondsOf);
 
 //
 //  ## millisecondsOf()
@@ -510,8 +510,8 @@ var isSecondsOf = _.isInstanceOf(secondsOf);
 //       millisecondsOf()
 //
 function millisecondsOf() {
-    var self = _.getInstance(this, millisecondsOf);
-    self.type = _.Integer;
+    var self = squishy.getInstance(this, millisecondsOf);
+    self.type = squishy.Integer;
     return self;
 }
 
@@ -520,14 +520,14 @@ function millisecondsOf() {
 //
 //  Returns `true` if `a` is an instance of `millisecondsOf`.
 //
-var isMillisecondsOf = _.isInstanceOf(millisecondsOf);
+var isMillisecondsOf = squishy.isInstanceOf(millisecondsOf);
 
 //
 //  ## incTime(a, b, v)
 //
 //  Increment time
 //
-var incTime = _.curry(function(t, x, v) {
+var incTime = squishy.curry(function(t, x, v) {
     return t + (x * v);
 });
 
@@ -536,7 +536,7 @@ var incTime = _.curry(function(t, x, v) {
 //
 //  Decrement time
 //
-var decTime = _.curry(function(t, x, v) {
+var decTime = squishy.curry(function(t, x, v) {
     return t - (x * v);
 });
 
@@ -655,14 +655,14 @@ var decMillisecond = decMilliseconds(1);
 //
 //  ### Fantasy Overload
 //
-_.fo.unsafeSetValueOf(Time.prototype);
+squishy.fo.unsafeSetValueOf(Time.prototype);
 
 //
 //  ### shrink(t)(m)
 //
 //  Shrink a time to find other possible issues around the time.
 //
-var shrink = _.curry(function(t, p, m) {
+var shrink = squishy.curry(function(t, p, m) {
     var accum = [t(0)],
         n = m[p],
         x = n;
@@ -680,7 +680,7 @@ var shrink = _.curry(function(t, p, m) {
 //
 //  append methods to the environment.
 //
-_ = _
+squishy = squishy
   .property('Time', Time)
   .property('Hours', Time.Hours)
   .property('Minutes', Time.Minutes)
@@ -753,14 +753,14 @@ _ = _
       return a.map(b);
   })
   .method('shrink', isHours, function(m) {
-      return shrink(_.Hours, 'hours')(m);
+      return shrink(squishy.Hours, 'hours')(m);
   })
   .method('shrink', isMinutes, function(m) {
-      return shrink(_.Minutes, 'minutes')(m);
+      return shrink(squishy.Minutes, 'minutes')(m);
   })
   .method('shrink', isSeconds, function(m) {
-      return shrink(_.Seconds, 'seconds')(m);
+      return shrink(squishy.Seconds, 'seconds')(m);
   })
   .method('shrink', isMilliseconds, function(m) {
-      return shrink(_.Milliseconds, 'milliseconds')(m);
+      return shrink(squishy.Milliseconds, 'milliseconds')(m);
   });

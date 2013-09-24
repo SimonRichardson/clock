@@ -1,9 +1,9 @@
 function fps(required) {
-    return _.Milliseconds((1 / Math.round(required)) * 1000);
+    return squishy.Milliseconds((1 / Math.round(required)) * 1000);
 }
 
 //
 //  append methods to the squishy environment.
 //
-_ = _
+squishy = squishy
     .property('fps', fps);

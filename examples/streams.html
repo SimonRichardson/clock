@@ -19,6 +19,8 @@
               log = _.IO(_.constant(function(x) {
                   document.getElementById('output').innerHTML = x;
               })),
+
+              
               node = _.curry(function(name, classes, value) {
                   return '<' + name + ' class="' + classes + '">' + value + '</' + name + '>';
               }),
@@ -72,23 +74,27 @@
               origin = _.Stream.of(time),
               pulse = _.every(_.Seconds(1));
 
-
-          origin.append(
-              pulse,
-              function(a, b) {
-                  return _.concat(a, b);
+          origin.both(pulse, _.Tuple2(0, 0)).map(
+              function(t) {
+                  if (!t._2) {
+                      return t._1;
+                  }
+                  return _.concat(t._1, t._2);
               }
-          ).fork(function(time) {
-              var make = function(f, time) {
-                  return _.compose(pad, f)(time);
-              };
+          ).fork(
+              function(time) {
+                  var make = function(f, time) {
+                      return _.compose(pad, f)(time);
+                  };
 
-              output(
-                      make(hoursToString, time),
-                      make(minutesToString, time),
-                      make(secondsToString, time)
-                  );
-          });
+                  output(
+                          make(hoursToString, time),
+                          make(minutesToString, time),
+                          make(secondsToString, time)
+                      );
+              },
+              function() {}
+          );
       });
 
     </script>

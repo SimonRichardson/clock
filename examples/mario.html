@@ -132,40 +132,11 @@
               }),
               draw = render(image);
 
-          // Merge two streams together to produce a tuple of last know values.
-          _.Stream.prototype.andWith = function(a) {
-              var env = this;
-
-              return _.Stream(
-                  function(next, done) {
-                      var left,
-                          right,
-                          end = _.once(done);
-
-                      env.fork(
-                          function(a) {
-                              left = a;
-                              next(_.Tuple2(a, right));
-                          },
-                          end
-                      );
-
-                      a.fork(
-                          function(a) {
-                              right = a;
-                              next(_.Tuple2(left, a));
-                          },
-                          end
-                      );
-                  }
-              );
-          };
-
           _.tick().map(
               function(a, b) {
                   return 2;
               }
-          ).andWith(keyboardArrows).scan(
+          ).both(keyboardArrows, _.Tuple2(0, {x:0, y:0})).scan(
               x.run(mario).set(_.randomRange(50, 350)),
               function(a, b) {
                   return step(a, b._1, b._2);

@@ -3,9 +3,9 @@ function tick() {
                                 window.mozRequestAnimationFrame ||
                                 window.webkitRequestAnimationFrame;
 
-    return _.Stream(function(next, done) {
+    return squishy.Stream(function(next, done) {
         var step = function() {
-            next();
+            next(0);
             requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
@@ -15,5 +15,5 @@ function tick() {
 //
 //  append methods to the squishy environment.
 //
-_ = _
+squishy = squishy
     .property('tick', tick);
